@@ -1,0 +1,123 @@
+{%- comment -%}
+  Product Card
+  Parameters:
+    product       - a product object (required)
+    show_vendor   - boolean (default: false)
+    show_rating   - boolean (default: false)
+    image_ratio   - one of 'portrait', 'square', 'landscape' (default: 'portrait')
+    lazy          - boolean (default: true)
+{%- endcomment -%}
+
+{%- liquid
+  assign show_vendor = show_vendor | default: false
+  assign show_rating = show_rating | default: false
+  assign image_ratio = image_ratio | default: 'portrait'
+  if lazy == null
+    assign lazy = true
+  endif
+
+  assign loading_attr = 'lazy'
+  if lazy == false
+    assign loading_attr = 'eager'
+  endif
+
+  assign current_variant = product.selected_or_first_available_variant
+  assign on_sale = false
+  if current_variant.compare_at_price != blank and current_variant.compare_at_price > current_variant.price
+    assign on_sale = true
+  endif
+
+  assign sold_out = false
+  if product.available == false
+    assign sold_out = true
+  endif
+-%}
+
+<div class="product-card product-card--{{ image_ratio }}">
+  <a class="product-card__media-link" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+    <div class="product-card__media">
+      {%- if product.featured_media != blank -%}
+        {%- assign img_alt = product.featured_media.alt | default: product.title | escape -%}
+        {{
+          product.featured_media
+          | image_url: width: 800
+          | image_tag:
+            loading: loading_attr,
+            widths: '240, 360, 480, 600, 720, 900, 1200',
+            sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+            class: 'product-card__image product-card__image--primary',
+            alt: img_alt
+        }}
+        {%- if product.media.size > 1 -%}
+          {%- assign second_media = product.media[1] -%}
+          {%- assign img_alt_2 = second_media.alt | default: product.title | escape -%}
+          {{
+            second_media
+            | image_url: width: 800
+            | image_tag:
+              loading: 'lazy',
+              widths: '240, 360, 480, 600, 720, 900, 1200',
+              sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+              class: 'product-card__image product-card__image--hover',
+              alt: img_alt_2
+          }}
+        {%- endif -%}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'product-card__image product-card__image--placeholder' }}
+      {%- endif -%}
+
+      <div class="product-card__badges">
+        {%- if on_sale -%}
+          <span class="product-card__badge product-card__badge--sale">{{ 'products.product.on_sale' | t }}</span>
+        {%- endif -%}
+        {%- if sold_out -%}
+          <span class="product-card__badge product-card__badge--soldout">{{ 'products.product.sold_out' | t }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </a>
+
+  <div class="product-card__info">
+    {%- if show_vendor and product.vendor != blank -%}
+      <p class="product-card__vendor">{{ product.vendor }}</p>
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <p class="product-card__price">
+      {%- if on_sale -%}
+        <span class="product-card__price-compare">
+          <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+          <s>{{ current_variant.compare_at_price | money }}</s>
+        </span>
+        <span class="product-card__price-final product-card__price-final--sale">
+          <span class="visually-hidden">{{ 'products.product.sale_price' | t }}</span>
+          {{ current_variant.price | money }}
+        </span>
+      {%- else -%}
+        <span class="product-card__price-final">{{ current_variant.price | money }}</span>
+      {%- endif -%}
+    </p>
+
+    {%- if product.options.size > 0 -%}
+      {%- for option in product.options_with_values -%}
+        {%- assign opt_downcase = option.name | downcase -%}
+        {%- if opt_downcase contains 'color' or opt_downcase contains 'colour' or opt_downcase contains 'farbe' -%}
+          <ul class="product-card__swatches" aria-label="{{ option.name | escape }}">
+            {%- for val in option.values limit: 5 -%}
+              <li class="product-card__swatch" style="background-color: {{ val | handle }};" title="{{ val | escape }}">
+                <span class="visually-hidden">{{ val }}</span>
+              </li>
+            {%- endfor -%}
+            {%- if option.values.size > 5 -%}
+              <li class="product-card__swatch-more">+{{ option.values.size | minus: 5 }}</li>
+            {%- endif -%}
+          </ul>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</div>

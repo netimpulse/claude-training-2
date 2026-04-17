@@ -1,0 +1,283 @@
+{%- liquid
+  assign is_empty = false
+  if cart.item_count == 0
+    assign is_empty = true
+  endif
+-%}
+
+<section
+  class="cart-section color-{{ section.settings.color_scheme }}"
+  style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div class="cart-section__inner page-width">
+    <header class="cart-section__header">
+      <h1 class="cart-section__title">{{ 'cart.title' | t }}</h1>
+      {%- unless is_empty -%}
+        <p class="cart-section__count">
+          {{ 'cart.items_count' | t: count: cart.item_count }}
+        </p>
+      {%- endunless -%}
+    </header>
+
+    {%- if is_empty -%}
+      <div class="cart-section__empty">
+        <p class="cart-section__empty-text">{{ 'cart.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">
+          {{ 'cart.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- else -%}
+      <form action="{{ routes.cart_url }}" method="post" id="CartForm" class="cart-section__form" novalidate>
+        <div class="cart-section__layout">
+          <div class="cart-section__items">
+            <table class="cart-section__table" role="table" aria-label="{{ 'cart.title' | t }}">
+              <thead class="cart-section__thead">
+                <tr>
+                  <th scope="col" class="cart-section__th cart-section__th--product">
+                    {{ 'cart.headings.product' | t }}
+                  </th>
+                  <th scope="col" class="cart-section__th cart-section__th--qty">
+                    {{ 'cart.headings.quantity' | t }}
+                  </th>
+                  <th scope="col" class="cart-section__th cart-section__th--total">
+                    {{ 'cart.headings.total' | t }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {%- for item in cart.items -%}
+                  <tr class="cart-section__row" data-line-item data-line-index="{{ forloop.index }}">
+                    <td class="cart-section__cell cart-section__cell--product">
+                      <div class="cart-section__product">
+                        <a class="cart-section__media-link" href="{{ item.url }}">
+                          {%- if item.image != blank -%}
+                            {%- assign img_alt = item.image.alt | default: item.product.title | escape -%}
+                            {{
+                              item.image
+                              | image_url: width: 200
+                              | image_tag:
+                                loading: 'lazy',
+                                widths: '100, 150, 200, 300',
+                                sizes: '100px',
+                                class: 'cart-section__media',
+                                alt: img_alt
+                            }}
+                          {%- else -%}
+                            {{ 'product-1' | placeholder_svg_tag: 'cart-section__media cart-section__media--placeholder' }}
+                          {%- endif -%}
+                        </a>
+                        <div class="cart-section__product-info">
+                          <a class="cart-section__product-title" href="{{ item.url }}">
+                            {{ item.product.title }}
+                          </a>
+                          {%- if item.product.has_only_default_variant == false -%}
+                            <ul class="cart-section__variant-options">
+                              {%- for option in item.options_with_values -%}
+                                <li>{{ option.name }}: {{ option.value }}</li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+                          {%- if item.selling_plan_allocation != blank -%}
+                            <p class="cart-section__selling-plan">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                          {%- endif -%}
+                          {%- unless item.properties == blank -%}
+                            <ul class="cart-section__properties">
+                              {%- for p in item.properties -%}
+                                {%- unless p.last == blank or p.first.first == '_' -%}
+                                  <li>{{ p.first }}: {{ p.last }}</li>
+                                {%- endunless -%}
+                              {%- endfor -%}
+                            </ul>
+                          {%- endunless -%}
+
+                          {%- if item.discounts.size > 0 -%}
+                            <ul class="cart-section__discounts">
+                              {%- for discount in item.discounts -%}
+                                <li>{{ discount.title }} ({{ discount.savings | money }})</li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+
+                          <p class="cart-section__unit-price">
+                            {%- if item.original_price != item.final_price -%}
+                              <span class="cart-section__unit-price-compare">
+                                <s>{{ item.original_price | money }}</s>
+                              </span>
+                              <span>{{ item.final_price | money }}</span>
+                            {%- else -%}
+                              {{ item.original_price | money }}
+                            {%- endif -%}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td class="cart-section__cell cart-section__cell--qty">
+                      <div class="cart-section__qty-stepper">
+                        <label for="Qty-{{ item.index | plus: 1 }}" class="visually-hidden">
+                          {{ 'cart.quantity' | t }}
+                        </label>
+                        <button
+                          type="button"
+                          class="cart-section__qty-btn"
+                          data-qty-decrease
+                          aria-label="{{ 'cart.decrease' | t: product: item.product.title }}"
+                        >
+                          {%- render 'icon', name: 'minus' -%}
+                        </button>
+                        <input
+                          id="Qty-{{ item.index | plus: 1 }}"
+                          type="number"
+                          name="updates[]"
+                          value="{{ item.quantity }}"
+                          min="0"
+                          data-qty-input
+                          data-line="{{ item.index | plus: 1 }}"
+                          class="cart-section__qty-input"
+                        >
+                        <button
+                          type="button"
+                          class="cart-section__qty-btn"
+                          data-qty-increase
+                          aria-label="{{ 'cart.increase' | t: product: item.product.title }}"
+                        >
+                          {%- render 'icon', name: 'plus' -%}
+                        </button>
+                      </div>
+                      <a href="{{ item.url_to_remove }}" class="cart-section__remove" data-remove-link>
+                        {%- render 'icon', name: 'trash' -%}
+                        <span>{{ 'cart.remove' | t }}</span>
+                      </a>
+                    </td>
+
+                    <td class="cart-section__cell cart-section__cell--total">
+                      <p class="cart-section__line-total">
+                        {%- if item.original_line_price != item.final_line_price -%}
+                          <span class="cart-section__line-compare"><s>{{ item.original_line_price | money }}</s></span>
+                          <span>{{ item.final_line_price | money }}</span>
+                        {%- else -%}
+                          {{ item.original_line_price | money }}
+                        {%- endif -%}
+                      </p>
+                    </td>
+                  </tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+          </div>
+
+          <aside class="cart-section__summary" aria-label="{{ 'cart.summary' | t }}">
+            <div class="cart-section__summary-inner">
+              {%- if section.settings.show_note -%}
+                <details class="cart-section__note">
+                  <summary class="cart-section__note-summary">
+                    {{ 'cart.note' | t }}
+                  </summary>
+                  <div class="cart-section__note-body">
+                    <label for="CartNote" class="visually-hidden">{{ 'cart.note' | t }}</label>
+                    <textarea
+                      id="CartNote"
+                      name="note"
+                      rows="3"
+                      class="cart-section__textarea"
+                      placeholder="{{ 'cart.note_placeholder' | t }}"
+                    >{{ cart.note }}</textarea>
+                  </div>
+                </details>
+              {%- endif -%}
+
+              {%- if cart.cart_level_discount_applications.size > 0 -%}
+                <ul class="cart-section__discount-list">
+                  {%- for discount in cart.cart_level_discount_applications -%}
+                    <li>
+                      <span>{{ discount.title }}</span>
+                      <span>-{{ discount.total_allocated_amount | money }}</span>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+
+              <div class="cart-section__subtotal">
+                <span class="cart-section__subtotal-label">{{ 'cart.subtotal' | t }}</span>
+                <span class="cart-section__subtotal-value">{{ cart.total_price | money_with_currency }}</span>
+              </div>
+
+              <p class="cart-section__taxes">{{ 'cart.taxes_and_shipping' | t }}</p>
+
+              <div class="cart-section__actions">
+                <button type="submit" name="checkout" class="cart-section__checkout btn btn--primary btn--full">
+                  {{ 'cart.checkout' | t }}
+                </button>
+                <button type="submit" name="update" class="cart-section__update btn btn--secondary btn--full">
+                  {{ 'cart.update' | t }}
+                </button>
+              </div>
+
+              {%- if additional_checkout_buttons -%}
+                <div class="cart-section__additional-checkouts">
+                  {{ content_for_additional_checkout_buttons }}
+                </div>
+              {%- endif -%}
+
+              <p class="cart-section__continue">
+                <a href="{{ routes.all_products_collection_url }}">{{ 'cart.continue_shopping' | t }}</a>
+              </p>
+            </div>
+          </aside>
+        </div>
+      </form>
+    {%- endif -%}
+  </div>
+</section>
+
+{{ 'section-cart.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-cart.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "t:sections.main_cart.name",
+  "tag": "section",
+  "class": "section-main-cart",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_note",
+      "label": "t:sections.main_cart.show_note",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:shared.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:shared.section_padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:shared.padding_top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:shared.padding_bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "enabled_on": {
+    "templates": ["cart"]
+  }
+}
+{% endschema %}

@@ -1,0 +1,352 @@
+{%- comment -%}
+  Product Showcase section
+  ------------------------
+  Merchants pick a product; on the storefront visitors see:
+    - A 3D model (from the product's media, if any)
+    - A video of the product on a model (either uploaded or Shopify-hosted)
+    - Variant pickers (size, color, etc.)
+    - Live price updates on variant change
+    - Add to cart button (AJAX), inventory-aware
+
+  Video behaviour:
+    * On section mount → video plays once automatically (muted, playsinline)
+    * When the video ends → the last frame is frozen OR a custom "end frame" image
+      overlays the video (merchant can upload one)
+    * On hover / focus → the video restarts from the beginning
+    * Respects prefers-reduced-motion (no autoplay, image shown instead)
+{%- endcomment -%}
+
+{{ 'section-product-showcase.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-product-showcase.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign scheme = section.settings.color_scheme
+  assign product = all_products[section.settings.product]
+  assign has_product = false
+  if product != blank and product.title != blank
+    assign has_product = true
+    assign current_variant = product.selected_or_first_available_variant
+  endif
+  assign eyebrow = section.settings.eyebrow
+  assign show_vendor = section.settings.show_vendor
+  assign show_description = section.settings.show_description
+  assign show_quantity = section.settings.show_quantity
+  assign media_video = section.settings.video
+  assign end_frame_image = section.settings.end_frame_image
+  assign include_3d = section.settings.include_3d
+-%}
+
+{% style %}
+  {%- if scheme -%}
+  .color-{{ scheme.id }} {
+    --color-background: {{ scheme.settings.background.red }}, {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
+    --color-text: {{ scheme.settings.text.red }}, {{ scheme.settings.text.green }}, {{ scheme.settings.text.blue }};
+    --color-button: {{ scheme.settings.button.red }}, {{ scheme.settings.button.green }}, {{ scheme.settings.button.blue }};
+    --color-button-label: {{ scheme.settings.button_label.red }}, {{ scheme.settings.button_label.green }}, {{ scheme.settings.button_label.blue }};
+  }
+  {%- endif -%}
+  #shopify-section-{{ section.id }} {
+    --section-padding-top: {{ section.settings.padding_top }}px;
+    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+{% endstyle %}
+
+<section class="product-showcase color-scheme color-{{ scheme.id }}"
+         data-section-id="{{ section.id }}"
+         data-product-id="{{ product.id }}">
+  <div class="product-showcase__inner">
+
+    {%- comment -%} ============ MEDIA COLUMN ============ {%- endcomment -%}
+    <div class="product-showcase__media">
+      {%- if include_3d and has_product -%}
+        {%- assign model_media = null -%}
+        {%- for media in product.media -%}
+          {%- if media.media_type == 'model' and model_media == null -%}
+            {%- assign model_media = media -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if model_media -%}
+          <div class="product-showcase__3d">
+            {{ model_media | model_viewer_tag:
+               reveal: 'auto',
+               toggleable: true,
+               image_size: '1200x' }}
+            <button type="button" class="product-showcase__3d-btn" aria-label="{{ 'products.media.view_3d' | t }}">
+              {{ 'products.media.view_in_3d' | t }}
+            </button>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if media_video != blank or end_frame_image != blank -%}
+        {%- assign poster_alt = end_frame_image.alt | default: product.title | default: shop.name | escape -%}
+        <product-showcase-video class="product-showcase__video-wrap"
+                                {% if end_frame_image != blank %}data-has-poster="true"{% endif %}>
+          {%- if media_video != blank -%}
+            {{ media_video | video_tag:
+               image_size: '1200x',
+               autoplay: true,
+               muted: true,
+               loop: false,
+               controls: false,
+               playsinline: true,
+               class: 'product-showcase__video' }}
+          {%- endif -%}
+          {%- if end_frame_image != blank -%}
+            {{ end_frame_image | image_url: width: 1600 | image_tag:
+               alt: poster_alt,
+               class: 'product-showcase__poster',
+               loading: 'lazy',
+               widths: '400,600,900,1200,1600',
+               sizes: '(min-width: 990px) 50vw, 100vw' }}
+          {%- endif -%}
+        </product-showcase-video>
+      {%- elsif has_product and product.featured_media != blank -%}
+        {%- assign fm_alt = product.featured_media.alt | default: product.title | escape -%}
+        {{ product.featured_media | image_url: width: 1600 | image_tag:
+           alt: fm_alt,
+           class: 'product-showcase__fallback-image',
+           loading: 'lazy',
+           widths: '400,600,900,1200,1600',
+           sizes: '(min-width: 990px) 50vw, 100vw' }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'product-showcase__placeholder-svg' }}
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ============ INFO COLUMN ============ {%- endcomment -%}
+    <div class="product-showcase__info">
+      {%- if eyebrow != blank -%}
+        <span class="eyebrow">{{ eyebrow | escape }}</span>
+      {%- endif -%}
+
+      {%- if show_vendor and has_product and product.vendor != blank -%}
+        <p class="product-showcase__vendor">{{ product.vendor | escape }}</p>
+      {%- endif -%}
+
+      <h2 class="product-showcase__title">
+        {%- if has_product -%}
+          <a href="{{ product.url }}">{{ product.title | escape }}</a>
+        {%- else -%}
+          {{ section.settings.placeholder_title | default: 'Product Title' | escape }}
+        {%- endif -%}
+      </h2>
+
+      {%- if has_product -%}
+        <div class="product-showcase__price" data-price-wrap>
+          <span class="product-showcase__price-current" data-price>{{ current_variant.price | money }}</span>
+          {%- if current_variant.compare_at_price > current_variant.price -%}
+            <s class="product-showcase__price-compare" data-compare-price>{{ current_variant.compare_at_price | money }}</s>
+          {%- else -%}
+            <s class="product-showcase__price-compare" data-compare-price hidden></s>
+          {%- endif -%}
+        </div>
+      {%- else -%}
+        <div class="product-showcase__price">
+          <span class="product-showcase__price-current">{{ 0 | money }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- if show_description and has_product and product.description != blank -%}
+        <div class="product-showcase__description rte">{{ product.description }}</div>
+      {%- endif -%}
+
+      {%- if has_product -%}
+        {%- form 'product', product, id: 'ProductShowcaseForm', class: 'product-showcase__form' -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id-input>
+
+          {%- unless product.has_only_default_variant -%}
+            <div class="product-showcase__options">
+              {%- for option in product.options_with_values -%}
+                {%- assign option_name = option.name | downcase -%}
+                {%- assign render_as_swatch = false -%}
+                {%- if option_name contains 'color' or option_name contains 'colour' or option_name contains 'farbe' -%}
+                  {%- assign render_as_swatch = true -%}
+                {%- endif -%}
+                <fieldset class="product-showcase__option" data-option-index="{{ forloop.index0 }}">
+                  <legend class="product-showcase__option-label">
+                    <span>{{ option.name | escape }}:</span>
+                    <span class="product-showcase__option-selected" data-option-selected>{{ option.selected_value | escape }}</span>
+                  </legend>
+                  <div class="product-showcase__option-values product-showcase__option-values--{% if render_as_swatch %}swatch{% else %}size{% endif %}">
+                    {%- for value in option.values -%}
+                      {%- assign input_id = 'Option-' | append: section.id | append: '-' | append: forloop.parentloop.index0 | append: '-' | append: forloop.index0 -%}
+                      {%- assign is_selected = false -%}
+                      {%- if option.selected_value == value -%}{%- assign is_selected = true -%}{%- endif -%}
+                      <label class="product-showcase__option-value{% if render_as_swatch %} product-showcase__option-value--swatch{% endif %}{% if is_selected %} is-selected{% endif %}"
+                             for="{{ input_id }}"
+                             data-option-value-label>
+                        <input type="radio"
+                               id="{{ input_id }}"
+                               name="options[{{ option.name | escape }}]"
+                               value="{{ value | escape }}"
+                               {% if is_selected %}checked{% endif %}
+                               data-option-input>
+                        {%- if render_as_swatch -%}
+                          <span class="product-showcase__swatch" style="background-color: {{ value | downcase | replace: ' ', '' }};" title="{{ value | escape }}"></span>
+                          <span class="visually-hidden">{{ value | escape }}</span>
+                        {%- else -%}
+                          <span>{{ value | escape }}</span>
+                        {%- endif -%}
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                </fieldset>
+              {%- endfor -%}
+            </div>
+          {%- endunless -%}
+
+          {%- if show_quantity -%}
+            <div class="product-showcase__quantity">
+              <label for="Quantity-{{ section.id }}" class="product-showcase__qty-label">{{ 'products.product.quantity' | t }}</label>
+              <div class="product-showcase__qty-stepper">
+                <button type="button" class="product-showcase__qty-btn" data-qty-decrease aria-label="{{ 'products.product.decrease_quantity' | t }}">
+                  {%- render 'icon', name: 'minus' -%}
+                </button>
+                <input id="Quantity-{{ section.id }}"
+                       type="number"
+                       name="quantity"
+                       value="1"
+                       min="1"
+                       step="1"
+                       class="product-showcase__qty-input"
+                       data-qty-input>
+                <button type="button" class="product-showcase__qty-btn" data-qty-increase aria-label="{{ 'products.product.increase_quantity' | t }}">
+                  {%- render 'icon', name: 'plus' -%}
+                </button>
+              </div>
+            </div>
+          {%- endif -%}
+
+          <button type="submit"
+                  name="add"
+                  class="btn btn--primary btn--full product-showcase__submit"
+                  data-add-btn
+                  {% unless current_variant.available %}disabled{% endunless %}>
+            <span data-add-btn-text>
+              {%- if current_variant.available -%}
+                {{ 'products.product.add_to_cart' | t }}
+              {%- else -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- endif -%}
+            </span>
+          </button>
+
+          <p class="product-showcase__feedback" data-feedback aria-live="polite" hidden></p>
+        {%- endform -%}
+
+        {%- comment -%} Variant data for JS {%- endcomment -%}
+        <script type="application/json" data-variants-json>{{ product.variants | json }}</script>
+
+      {%- else -%}
+        <p class="product-showcase__empty-hint">{{ 'sections.product_showcase.empty_hint' | t }}</p>
+        <button type="button" class="btn btn--primary btn--full" disabled>{{ 'products.product.add_to_cart' | t }}</button>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.product_showcase.name",
+  "tag": "section",
+  "class": "section-product-showcase",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.product_showcase.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:sections.product_showcase.settings.product.label"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.product_showcase.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_title",
+      "label": "t:sections.product_showcase.settings.placeholder_title.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_showcase.settings.media_header.content"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:sections.product_showcase.settings.video.label",
+      "info": "t:sections.product_showcase.settings.video.info"
+    },
+    {
+      "type": "image_picker",
+      "id": "end_frame_image",
+      "label": "t:sections.product_showcase.settings.end_frame_image.label",
+      "info": "t:sections.product_showcase.settings.end_frame_image.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "include_3d",
+      "label": "t:sections.product_showcase.settings.include_3d.label",
+      "info": "t:sections.product_showcase.settings.include_3d.info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_showcase.settings.display_header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "t:sections.product_showcase.settings.show_vendor.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.product_showcase.settings.show_description.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity",
+      "label": "t:sections.product_showcase.settings.show_quantity.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_showcase.settings.padding_header.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.product_showcase.settings.padding_top.label",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.product_showcase.settings.padding_bottom.label",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product_showcase.presets.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,36 +1,32 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
-  <head>
-    {% # Inlined CSS Variables %}
-    {% render 'css-variables' %}
-
-    {% comment %}
-      Font preloading:
-      1. Preconnect to font CDN for faster connection
-      2. Preload only the critical font variant (base weight)
-      3. Additional variants load on-demand via @font-face
-    {% endcomment %}
-    {% unless settings.type_primary_font.system? %}
-      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
-
-      {% comment %} Preload the base font variant for initial page render {% endcomment %}
-      {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
-    {% endunless %}
-
-    {% # Load and preload the critical CSS %}
-    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
-
-    {% # Social, title, etc. %}
-    {% render 'meta-tags' %}
-
-    {{ content_for_header }}
-  </head>
-
-  <body>
-    {% sections 'header-group' %}
-
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="">
+  <link rel="canonical" href="{{ canonical_url }}">
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+  {%- endif -%}
+  <title>{{ page_title }}{%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{%- endif -%}{%- if current_page != 1 %} &ndash; Page {{ current_page }}{%- endif -%}{%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{%- endunless -%}</title>
+  {%- if page_description -%}
+    <meta name="description" content="{{ page_description | escape }}">
+  {%- endif -%}
+  {%- render 'meta-tags' -%}
+  <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+  {%- render 'css-variables' -%}
+  {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ content_for_header }}
+</head>
+<body class="template-{{ template.name }}">
+  <a class="skip-to-content-link visually-hidden" href="#MainContent">
+    {{ 'general.accessibility.skip_to_content' | t }}
+  </a>
+  {%- sections 'header-group' -%}
+  <main id="MainContent" class="content-for-layout" role="main" tabindex="-1">
     {{ content_for_layout }}
-
-    {% sections 'footer-group' %}
-  </body>
+  </main>
+  {%- sections 'footer-group' -%}
+</body>
 </html>

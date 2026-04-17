@@ -1,0 +1,24 @@
+{%- comment -%}
+  Renders social media links from global theme settings.
+  Each link opens in a new tab with noopener.
+{%- endcomment -%}
+<ul class="site-footer__socials" role="list">
+  {%- if settings.social_instagram_link != blank -%}
+    <li><a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener" aria-label="Instagram">{%- render 'icon', name: 'instagram' -%}</a></li>
+  {%- endif -%}
+  {%- if settings.social_tiktok_link != blank -%}
+    <li><a href="{{ settings.social_tiktok_link }}" target="_blank" rel="noopener" aria-label="TikTok">{%- render 'icon', name: 'tiktok' -%}</a></li>
+  {%- endif -%}
+  {%- if settings.social_facebook_link != blank -%}
+    <li><a href="{{ settings.social_facebook_link }}" target="_blank" rel="noopener" aria-label="Facebook">{%- render 'icon', name: 'facebook' -%}</a></li>
+  {%- endif -%}
+  {%- if settings.social_pinterest_link != blank -%}
+    <li><a href="{{ settings.social_pinterest_link }}" target="_blank" rel="noopener" aria-label="Pinterest">{%- render 'icon', name: 'pinterest' -%}</a></li>
+  {%- endif -%}
+  {%- if settings.social_youtube_link != blank -%}
+    <li><a href="{{ settings.social_youtube_link }}" target="_blank" rel="noopener" aria-label="YouTube">{%- render 'icon', name: 'youtube' -%}</a></li>
+  {%- endif -%}
+  {%- if settings.social_twitter_link != blank -%}
+    <li><a href="{{ settings.social_twitter_link }}" target="_blank" rel="noopener" aria-label="X / Twitter">{%- render 'icon', name: 'twitter' -%}</a></li>
+  {%- endif -%}
+</ul>

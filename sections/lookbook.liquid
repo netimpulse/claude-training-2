@@ -1,0 +1,389 @@
+{%- liquid
+  assign layout = section.settings.layout | default: 'side-by-side'
+-%}
+
+<section
+  class="lookbook color-{{ section.settings.color_scheme }} lookbook--{{ layout }}"
+  style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div class="lookbook__inner page-width">
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.text != blank -%}
+      <header class="lookbook__header">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="lookbook__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="lookbook__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <div class="lookbook__text rte">{{ section.settings.text }}</div>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    <div class="lookbook__grid">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'image' -%}
+            <div class="lookbook__tile lookbook__tile--image" {{ block.shopify_attributes }}>
+              {%- if block.settings.image != blank -%}
+                {%- assign img_alt = block.settings.image.alt | default: section.settings.heading | default: 'Lookbook' | escape -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 1600
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '480, 720, 960, 1200, 1600, 2000',
+                    sizes: '(min-width: 990px) 50vw, 100vw',
+                    class: 'lookbook__image',
+                    alt: img_alt
+                }}
+              {%- else -%}
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook__image lookbook__image--placeholder' }}
+              {%- endif -%}
+
+              {%- if block.settings.hotspots_enabled -%}
+                <div class="lookbook__hotspots">
+                  {%- for i in (1..4) -%}
+                    {%- liquid
+                      case i
+                        when 1
+                          assign product = block.settings.hotspot_1_product
+                          assign x = block.settings.hotspot_1_x
+                          assign y = block.settings.hotspot_1_y
+                        when 2
+                          assign product = block.settings.hotspot_2_product
+                          assign x = block.settings.hotspot_2_x
+                          assign y = block.settings.hotspot_2_y
+                        when 3
+                          assign product = block.settings.hotspot_3_product
+                          assign x = block.settings.hotspot_3_x
+                          assign y = block.settings.hotspot_3_y
+                        when 4
+                          assign product = block.settings.hotspot_4_product
+                          assign x = block.settings.hotspot_4_x
+                          assign y = block.settings.hotspot_4_y
+                      endcase
+                    -%}
+                    {%- if product != blank -%}
+                      {%- assign hotspot_product = all_products[product] -%}
+                      {%- if hotspot_product != blank -%}
+                        <details class="lookbook__hotspot" style="--hs-x: {{ x }}%; --hs-y: {{ y }}%;">
+                          <summary class="lookbook__hotspot-btn" aria-label="{{ hotspot_product.title | escape }}">
+                            <span class="lookbook__hotspot-pulse" aria-hidden="true"></span>
+                            <span class="lookbook__hotspot-dot" aria-hidden="true"></span>
+                          </summary>
+                          <div class="lookbook__hotspot-card">
+                            {%- if hotspot_product.featured_media != blank -%}
+                              {%- assign hs_alt = hotspot_product.featured_media.alt | default: hotspot_product.title | escape -%}
+                              {{
+                                hotspot_product.featured_media
+                                | image_url: width: 240
+                                | image_tag:
+                                  loading: 'lazy',
+                                  widths: '120, 240, 360',
+                                  sizes: '120px',
+                                  class: 'lookbook__hotspot-img',
+                                  alt: hs_alt
+                              }}
+                            {%- endif -%}
+                            <div class="lookbook__hotspot-info">
+                              <p class="lookbook__hotspot-title">{{ hotspot_product.title }}</p>
+                              <p class="lookbook__hotspot-price">{{ hotspot_product.price | money }}</p>
+                              <a class="lookbook__hotspot-link" href="{{ hotspot_product.url }}">
+                                {{ 'sections.lookbook.shop_product' | t }}
+                              </a>
+                            </div>
+                          </div>
+                        </details>
+                      {%- endif -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.caption != blank -%}
+                <p class="lookbook__caption">{{ block.settings.caption | escape }}</p>
+              {%- endif -%}
+            </div>
+
+          {%- when 'text_card' -%}
+            <div class="lookbook__tile lookbook__tile--text" {{ block.shopify_attributes }}>
+              <div class="lookbook__text-inner">
+                {%- if block.settings.eyebrow != blank -%}
+                  <p class="lookbook__eyebrow">{{ block.settings.eyebrow | escape }}</p>
+                {%- endif -%}
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="lookbook__tile-heading">{{ block.settings.heading | escape }}</h3>
+                {%- endif -%}
+                {%- if block.settings.body != blank -%}
+                  <div class="lookbook__tile-body rte">{{ block.settings.body }}</div>
+                {%- endif -%}
+                {%- if block.settings.link_text != blank and block.settings.link_url != blank -%}
+                  <a class="btn btn--secondary" href="{{ block.settings.link_url }}">
+                    {{ block.settings.link_text | escape }}
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{{ 'section-lookbook.css' | asset_url | stylesheet_tag }}
+
+{% schema %}
+{
+  "name": "t:sections.lookbook.name",
+  "tag": "section",
+  "class": "section-lookbook",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:shared.eyebrow",
+      "default": "Lookbook"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:shared.heading",
+      "default": "Style Stories"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:shared.subheading"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.lookbook.layout",
+      "options": [
+        { "value": "side-by-side", "label": "t:sections.lookbook.layout_side" },
+        { "value": "grid", "label": "t:sections.lookbook.layout_grid" },
+        { "value": "feature", "label": "t:sections.lookbook.layout_feature" }
+      ],
+      "default": "side-by-side"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:shared.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:shared.section_padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:shared.padding_top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:shared.padding_bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "t:sections.lookbook.block_image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.lookbook.image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "t:sections.lookbook.caption"
+        },
+        {
+          "type": "checkbox",
+          "id": "hotspots_enabled",
+          "label": "t:sections.lookbook.hotspots_enabled",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "t:sections.lookbook.hotspot_1"
+        },
+        {
+          "type": "product",
+          "id": "hotspot_1_product",
+          "label": "t:sections.lookbook.product"
+        },
+        {
+          "type": "range",
+          "id": "hotspot_1_x",
+          "label": "t:sections.lookbook.x_percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "hotspot_1_y",
+          "label": "t:sections.lookbook.y_percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 30
+        },
+        {
+          "type": "header",
+          "content": "t:sections.lookbook.hotspot_2"
+        },
+        {
+          "type": "product",
+          "id": "hotspot_2_product",
+          "label": "t:sections.lookbook.product"
+        },
+        {
+          "type": "range",
+          "id": "hotspot_2_x",
+          "label": "t:sections.lookbook.x_percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 60
+        },
+        {
+          "type": "range",
+          "id": "hotspot_2_y",
+          "label": "t:sections.lookbook.y_percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50
+        },
+        {
+          "type": "header",
+          "content": "t:sections.lookbook.hotspot_3"
+        },
+        {
+          "type": "product",
+          "id": "hotspot_3_product",
+          "label": "t:sections.lookbook.product"
+        },
+        {
+          "type": "range",
+          "id": "hotspot_3_x",
+          "label": "t:sections.lookbook.x_percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 45
+        },
+        {
+          "type": "range",
+          "id": "hotspot_3_y",
+          "label": "t:sections.lookbook.y_percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 75
+        },
+        {
+          "type": "header",
+          "content": "t:sections.lookbook.hotspot_4"
+        },
+        {
+          "type": "product",
+          "id": "hotspot_4_product",
+          "label": "t:sections.lookbook.product"
+        },
+        {
+          "type": "range",
+          "id": "hotspot_4_x",
+          "label": "t:sections.lookbook.x_percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 75
+        },
+        {
+          "type": "range",
+          "id": "hotspot_4_y",
+          "label": "t:sections.lookbook.y_percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 30
+        }
+      ]
+    },
+    {
+      "type": "text_card",
+      "name": "t:sections.lookbook.block_text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "t:shared.eyebrow"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:shared.heading",
+          "default": "Crafted for you"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "t:shared.text"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "t:shared.link_text",
+          "default": "Shop the look"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "t:shared.link_url"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.lookbook.name",
+      "blocks": [
+        { "type": "image" },
+        { "type": "text_card" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

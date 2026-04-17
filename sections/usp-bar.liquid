@@ -1,0 +1,180 @@
+{%- liquid
+  assign mode = section.settings.mode | default: 'grid'
+  assign show_dividers = section.settings.show_dividers
+-%}
+
+<section
+  class="usp-bar color-{{ section.settings.color_scheme }} usp-bar--{{ mode }}{% if show_dividers %} usp-bar--dividers{% endif %}"
+  style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+  role="region"
+  aria-label="{{ 'sections.usp_bar.aria_label' | t }}"
+>
+  <div class="usp-bar__inner page-width">
+    {%- if mode == 'marquee' -%}
+      <div class="usp-bar__track" aria-hidden="false">
+        <ul class="usp-bar__list usp-bar__list--scroll">
+          {%- for block in section.blocks -%}
+            <li class="usp-bar__item" {{ block.shopify_attributes }}>
+              {%- if block.settings.icon != 'none' -%}
+                <span class="usp-bar__icon" aria-hidden="true">
+                  {%- render 'icon', name: block.settings.icon -%}
+                </span>
+              {%- endif -%}
+              <span class="usp-bar__text">{{ block.settings.text | escape }}</span>
+            </li>
+          {%- endfor -%}
+          {%- comment -%} Duplicate for seamless loop {%- endcomment -%}
+          {%- for block in section.blocks -%}
+            <li class="usp-bar__item" aria-hidden="true">
+              {%- if block.settings.icon != 'none' -%}
+                <span class="usp-bar__icon">
+                  {%- render 'icon', name: block.settings.icon -%}
+                </span>
+              {%- endif -%}
+              <span class="usp-bar__text">{{ block.settings.text | escape }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- else -%}
+      <ul class="usp-bar__list usp-bar__list--grid" role="list">
+        {%- for block in section.blocks -%}
+          <li class="usp-bar__item" {{ block.shopify_attributes }}>
+            {%- if block.settings.icon != 'none' -%}
+              <span class="usp-bar__icon" aria-hidden="true">
+                {%- render 'icon', name: block.settings.icon -%}
+              </span>
+            {%- endif -%}
+            <span class="usp-bar__content">
+              <span class="usp-bar__text">{{ block.settings.text | escape }}</span>
+              {%- if block.settings.subtext != blank -%}
+                <span class="usp-bar__subtext">{{ block.settings.subtext | escape }}</span>
+              {%- endif -%}
+            </span>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</section>
+
+{{ 'section-usp-bar.css' | asset_url | stylesheet_tag }}
+
+{% schema %}
+{
+  "name": "t:sections.usp_bar.name",
+  "tag": "section",
+  "class": "section-usp-bar",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "mode",
+      "label": "t:sections.usp_bar.mode",
+      "options": [
+        { "value": "grid", "label": "t:sections.usp_bar.mode_grid" },
+        { "value": "marquee", "label": "t:sections.usp_bar.mode_marquee" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dividers",
+      "label": "t:sections.usp_bar.show_dividers",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:shared.color_scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "header",
+      "content": "t:shared.section_padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:shared.padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:shared.padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "t:sections.usp_bar.block_item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.usp_bar.icon",
+          "options": [
+            { "value": "none", "label": "t:sections.usp_bar.icon_none" },
+            { "value": "truck", "label": "t:sections.usp_bar.icon_truck" },
+            { "value": "return", "label": "t:sections.usp_bar.icon_return" },
+            { "value": "shield", "label": "t:sections.usp_bar.icon_shield" },
+            { "value": "credit-card", "label": "t:sections.usp_bar.icon_credit_card" },
+            { "value": "leaf", "label": "t:sections.usp_bar.icon_leaf" },
+            { "value": "chat", "label": "t:sections.usp_bar.icon_chat" },
+            { "value": "globe", "label": "t:sections.usp_bar.icon_globe" },
+            { "value": "heart", "label": "t:sections.usp_bar.icon_heart" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:shared.text",
+          "default": "Free shipping on orders over 50€"
+        },
+        {
+          "type": "text",
+          "id": "subtext",
+          "label": "t:sections.usp_bar.subtext"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.usp_bar.name",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": { "icon": "truck", "text": "Free shipping over 50€" }
+        },
+        {
+          "type": "item",
+          "settings": { "icon": "return", "text": "30-day free returns" }
+        },
+        {
+          "type": "item",
+          "settings": { "icon": "shield", "text": "Secure checkout" }
+        },
+        {
+          "type": "item",
+          "settings": { "icon": "credit-card", "text": "Klarna & PayPal" }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

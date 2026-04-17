@@ -1,4 +1,531 @@
 {
+  "shared": {
+    "color_scheme": "Color scheme",
+    "section_padding": "Section padding",
+    "padding_top": "Top padding",
+    "padding_bottom": "Bottom padding",
+    "heading": "Heading",
+    "subheading": "Subheading",
+    "text": "Text",
+    "eyebrow": "Eyebrow",
+    "image": "Image",
+    "label": "Label",
+    "link_text": "Link text",
+    "link_url": "Link",
+    "alignment": "Alignment",
+    "align_left": "Left",
+    "align_center": "Center",
+    "button_style": "Button style",
+    "button_primary": "Primary",
+    "button_secondary": "Secondary",
+    "height_small": "Small",
+    "height_medium": "Medium",
+    "height_large": "Large",
+    "accessibility_heading": "Accessibility heading"
+  },
+  "settings_schema": {
+    "colors": {
+      "name": "Colors",
+      "settings": {
+        "background": {
+          "label": "Background"
+        },
+        "background_gradient": {
+          "label": "Background gradient"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "button": {
+          "label": "Solid button background"
+        },
+        "button_label": {
+          "label": "Solid button label"
+        },
+        "secondary_button_label": {
+          "label": "Outline button"
+        },
+        "shadow": {
+          "label": "Shadow"
+        }
+      }
+    },
+    "typography": {
+      "name": "Typography",
+      "settings": {
+        "type_header_font": {
+          "label": "Heading font"
+        },
+        "type_body_font": {
+          "label": "Body font"
+        },
+        "heading_scale": {
+          "label": "Heading scale"
+        },
+        "body_scale": {
+          "label": "Body scale"
+        }
+      }
+    },
+    "layout": {
+      "name": "Layout",
+      "settings": {
+        "page_width": {
+          "label": "Page width"
+        },
+        "spacing_sections": {
+          "label": "Space between sections"
+        }
+      }
+    },
+    "favicon": {
+      "name": "Favicon",
+      "settings": {
+        "favicon": {
+          "label": "Favicon",
+          "info": "Recommended 32x32 PNG."
+        }
+      }
+    },
+    "social_media": {
+      "name": "Social media",
+      "settings": {
+        "accounts": {
+          "content": "Social accounts"
+        },
+        "share_image": {
+          "label": "Default share image"
+        },
+        "social_instagram_link": {
+          "label": "Instagram"
+        },
+        "social_tiktok_link": {
+          "label": "TikTok"
+        },
+        "social_facebook_link": {
+          "label": "Facebook"
+        },
+        "social_pinterest_link": {
+          "label": "Pinterest"
+        },
+        "social_youtube_link": {
+          "label": "YouTube"
+        },
+        "social_twitter_link": {
+          "label": "X (Twitter)"
+        }
+      }
+    },
+    "cart": {
+      "name": "Cart",
+      "settings": {
+        "cart_type": {
+          "label": "Cart type",
+          "options__1": {
+            "label": "Page"
+          },
+          "options__2": {
+            "label": "Drawer"
+          }
+        },
+        "show_cart_note": {
+          "label": "Enable cart note"
+        }
+      }
+    }
+  },
+  "sections": {
+    "header": {
+      "name": "Header",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "logo_header": {
+          "content": "Logo"
+        },
+        "logo": {
+          "label": "Logo"
+        },
+        "logo_height": {
+          "label": "Logo height"
+        },
+        "menus_header": {
+          "content": "Menus"
+        },
+        "main_menu": {
+          "label": "Main menu",
+          "info": "Shown in the center of the header."
+        },
+        "show_main_nav": {
+          "label": "Show main navigation"
+        },
+        "drawer_menu": {
+          "label": "Burger drawer menu (second menu)",
+          "info": "Opens from the burger icon. Use this for categories like Women, Men, Jackets."
+        },
+        "drawer_promo_heading": {
+          "label": "Drawer promo heading"
+        },
+        "drawer_promo_text": {
+          "label": "Drawer promo text"
+        },
+        "behavior_header": {
+          "content": "Behavior"
+        },
+        "sticky_header": {
+          "label": "Sticky header"
+        }
+      }
+    },
+    "footer": {
+      "name": "Footer",
+      "presets": {
+        "name": "Footer"
+      },
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "subheading": {
+          "label": "Subheading"
+        },
+        "policies_header": {
+          "content": "Policies and trust"
+        },
+        "show_policies": {
+          "label": "Show Shopify policies (Terms, Privacy, Refund, Shipping)",
+          "info": "Uses the store's policy pages configured under Settings > Policies."
+        },
+        "show_payment_icons": {
+          "label": "Show payment icons"
+        },
+        "show_socials": {
+          "label": "Show social icons"
+        },
+        "padding_header": {
+          "content": "Section padding"
+        },
+        "padding_top": {
+          "label": "Top padding"
+        },
+        "padding_bottom": {
+          "label": "Bottom padding"
+        }
+      },
+      "blocks": {
+        "logo_info": {
+          "name": "Logo + About",
+          "settings": {
+            "logo": {
+              "label": "Logo"
+            },
+            "logo_height": {
+              "label": "Logo height"
+            },
+            "description": {
+              "label": "About text"
+            }
+          }
+        },
+        "menu": {
+          "name": "Menu",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "menu": {
+              "label": "Menu"
+            }
+          }
+        },
+        "text": {
+          "name": "Text",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "content": {
+              "label": "Content"
+            }
+          }
+        },
+        "newsletter": {
+          "name": "Newsletter",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "description": {
+              "label": "Description"
+            }
+          }
+        }
+      }
+    },
+    "hero": {
+      "name": "Hero",
+      "presets": {
+        "name": "Hero"
+      },
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "mode": {
+          "label": "Mode",
+          "options__slideshow": {
+            "label": "Slideshow"
+          },
+          "options__video": {
+            "label": "Video"
+          }
+        },
+        "height": {
+          "label": "Height",
+          "options__small": {
+            "label": "Small"
+          },
+          "options__medium": {
+            "label": "Medium"
+          },
+          "options__large": {
+            "label": "Large"
+          },
+          "options__full": {
+            "label": "Full screen"
+          }
+        },
+        "content_align": {
+          "label": "Content alignment",
+          "options__left": {
+            "label": "Left"
+          },
+          "options__center": {
+            "label": "Center"
+          },
+          "options__right": {
+            "label": "Right"
+          }
+        },
+        "overlay_opacity": {
+          "label": "Overlay opacity"
+        },
+        "slideshow_header": {
+          "content": "Slideshow",
+          "info": "Used when mode is Slideshow. Add slides as blocks."
+        },
+        "autoplay": {
+          "label": "Autoplay"
+        },
+        "autoplay_speed": {
+          "label": "Autoplay speed"
+        },
+        "video_header": {
+          "content": "Video",
+          "info": "Used when mode is Video. Upload a file OR paste a YouTube / Vimeo URL."
+        },
+        "video": {
+          "label": "Upload video"
+        },
+        "video_url": {
+          "label": "Or paste YouTube / Vimeo URL"
+        },
+        "video_controls": {
+          "label": "Show video controls"
+        },
+        "fallback_image": {
+          "label": "Fallback image"
+        },
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "subheading": {
+          "label": "Subheading"
+        },
+        "button_label": {
+          "label": "Button 1 label"
+        },
+        "button_link": {
+          "label": "Button 1 link"
+        },
+        "button_label_2": {
+          "label": "Button 2 label"
+        },
+        "button_link_2": {
+          "label": "Button 2 link"
+        }
+      },
+      "blocks": {
+        "slide": {
+          "name": "Slide",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "eyebrow": {
+              "label": "Eyebrow"
+            },
+            "heading": {
+              "label": "Heading"
+            },
+            "subheading": {
+              "label": "Subheading"
+            },
+            "button_label": {
+              "label": "Button 1 label"
+            },
+            "button_link": {
+              "label": "Button 1 link"
+            },
+            "button_label_2": {
+              "label": "Button 2 label"
+            },
+            "button_link_2": {
+              "label": "Button 2 link"
+            }
+          }
+        }
+      }
+    },
+    "product_showcase": {
+      "name": "Product showcase",
+      "presets": {
+        "name": "Product showcase"
+      },
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "placeholder_title": {
+          "label": "Placeholder title"
+        },
+        "product": {
+          "label": "Product"
+        },
+        "media_header": {
+          "content": "Media"
+        },
+        "video": {
+          "label": "Model video",
+          "info": "Autoplays once. Freezes on the final frame when the video ends. Restarts on hover."
+        },
+        "end_frame_image": {
+          "label": "Custom last-frame image",
+          "info": "Optional: shown instead of the last video frame when the video ends."
+        },
+        "include_3d": {
+          "label": "Show 3D model if available",
+          "info": "If the product has a 3D model, shoppers get a toggle between video and 3D."
+        },
+        "display_header": {
+          "content": "Display"
+        },
+        "show_vendor": {
+          "label": "Show vendor"
+        },
+        "show_description": {
+          "label": "Show description"
+        },
+        "show_quantity": {
+          "label": "Show quantity"
+        },
+        "padding_header": {
+          "content": "Section padding"
+        },
+        "padding_top": {
+          "label": "Top padding"
+        },
+        "padding_bottom": {
+          "label": "Bottom padding"
+        }
+      }
+    },
+    "featured_collection": {
+      "name": "Featured collection",
+      "collection": "Collection",
+      "products_to_show": "Products to show",
+      "columns_desktop": "Columns (desktop)",
+      "columns_mobile": "Columns (mobile)",
+      "image_ratio": "Image ratio",
+      "image_ratio_portrait": "Portrait",
+      "image_ratio_square": "Square",
+      "image_ratio_landscape": "Landscape",
+      "show_vendor": "Show vendor",
+      "show_view_all": "Show View-all button"
+    },
+    "lookbook": {
+      "name": "Lookbook",
+      "layout": "Layout",
+      "layout_side": "Side by side",
+      "layout_grid": "3-column grid",
+      "layout_feature": "Feature + thumbnail",
+      "block_image": "Image",
+      "block_text": "Text card",
+      "image": "Image",
+      "caption": "Caption",
+      "hotspots_enabled": "Enable shoppable hotspots",
+      "hotspot_1": "Hotspot 1",
+      "hotspot_2": "Hotspot 2",
+      "hotspot_3": "Hotspot 3",
+      "hotspot_4": "Hotspot 4",
+      "product": "Product",
+      "x_percent": "X position",
+      "y_percent": "Y position"
+    },
+    "usp_bar": {
+      "name": "USP bar",
+      "mode": "Display mode",
+      "mode_grid": "Grid",
+      "mode_marquee": "Marquee (animated)",
+      "show_dividers": "Show dividers",
+      "block_item": "Item",
+      "icon": "Icon",
+      "subtext": "Subtext (optional)",
+      "icon_none": "None",
+      "icon_truck": "Truck (shipping)",
+      "icon_return": "Return arrow",
+      "icon_shield": "Shield (security)",
+      "icon_credit_card": "Credit card",
+      "icon_leaf": "Leaf (sustainability)",
+      "icon_chat": "Chat (support)",
+      "icon_globe": "Globe",
+      "icon_heart": "Heart"
+    },
+    "image_with_text": {
+      "name": "Image with text",
+      "layout": "Layout",
+      "image_left": "Image left",
+      "image_right": "Image right",
+      "image_height": "Image height",
+      "heading_info": "Used as fallback image alt text.",
+      "block_eyebrow": "Eyebrow",
+      "block_heading": "Heading",
+      "block_text": "Rich text",
+      "block_features": "Feature list",
+      "block_button": "Button",
+      "features_info": "One feature per line."
+    },
+    "newsletter": {
+      "name": "Newsletter",
+      "background_image": "Background image (optional)",
+      "overlay_opacity": "Image overlay opacity",
+      "legal_text": "Legal / consent text (optional)"
+    },
+    "main_cart": {
+      "name": "Cart",
+      "show_note": "Enable order note field"
+    }
+  },
   "general": {
     "404": "Not found",
     "article": "Article",
@@ -72,6 +599,6 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
   }
 }

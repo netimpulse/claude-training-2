@@ -1,20 +1,154 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "mode": "slideshow",
+        "height": "large",
+        "content_align": "left",
+        "overlay_opacity": 20,
+        "autoplay": true,
+        "autoplay_speed": 6,
+        "color_scheme": "scheme-1"
+      },
+      "blocks": {
+        "slide-1": {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "New Drop",
+            "heading": "Spring / Summer 2026",
+            "subheading": "<p>Light fabrics, clean silhouettes — designed to be lived in.</p>",
+            "button_label": "Shop new arrivals",
+            "button_link": "/collections/all",
+            "button_label_2": "Lookbook",
+            "button_link_2": "/collections/all"
+          }
+        },
+        "slide-2": {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "Bestsellers",
+            "heading": "Everyday Essentials",
+            "subheading": "<p>The pieces you'll reach for first — every single day.</p>",
+            "button_label": "Shop now",
+            "button_link": "/collections/all"
+          }
+        }
+      },
+      "block_order": ["slide-1", "slide-2"]
+    },
+    "usp": {
+      "type": "usp-bar",
+      "settings": {
+        "mode": "grid",
+        "show_dividers": true,
+        "color_scheme": "scheme-2",
+        "padding_top": 20,
+        "padding_bottom": 20
+      },
+      "blocks": {
+        "u1": { "type": "item", "settings": { "icon": "truck", "text": "Free shipping over 50€" } },
+        "u2": { "type": "item", "settings": { "icon": "return", "text": "30-day free returns" } },
+        "u3": { "type": "item", "settings": { "icon": "shield", "text": "Secure checkout" } },
+        "u4": { "type": "item", "settings": { "icon": "credit-card", "text": "Klarna & PayPal" } }
+      },
+      "block_order": ["u1", "u2", "u3", "u4"]
+    },
+    "showcase": {
+      "type": "product-showcase",
+      "settings": {
+        "eyebrow": "Featured piece",
+        "placeholder_title": "The Signature Jacket",
+        "include_3d": true,
+        "show_vendor": true,
+        "show_description": true,
+        "show_quantity": true,
+        "color_scheme": "scheme-1",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Shop",
+        "heading": "New Arrivals",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "columns_mobile": 2,
+        "image_ratio": "portrait",
+        "show_vendor": false,
+        "show_view_all": true,
+        "color_scheme": "scheme-1",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
+    "lookbook": {
+      "type": "lookbook",
+      "settings": {
+        "eyebrow": "Lookbook",
+        "heading": "Style Stories",
+        "text": "<p>Editorial moments, shoppable in one tap.</p>",
+        "layout": "side-by-side",
+        "color_scheme": "scheme-1",
+        "padding_top": 80,
+        "padding_bottom": 80
+      },
+      "blocks": {
+        "img-1": { "type": "image", "settings": { "hotspots_enabled": true, "caption": "Look 01" } },
+        "txt-1": {
+          "type": "text_card",
+          "settings": {
+            "eyebrow": "Style Edit",
+            "heading": "Crafted for you",
+            "body": "<p>Every piece is cut from premium fabrics and designed to last beyond seasons.</p>",
+            "link_text": "Shop the look",
+            "link_url": "/collections/all"
+          }
+        }
+      },
+      "block_order": ["img-1", "txt-1"]
+    },
+    "iwt": {
+      "type": "image-with-text",
+      "settings": {
+        "layout": "image-right",
+        "image_height": "medium",
+        "color_scheme": "scheme-2",
+        "padding_top": 80,
+        "padding_bottom": 80
+      },
+      "blocks": {
+        "eb": { "type": "eyebrow", "settings": { "text": "About the brand" } },
+        "hd": { "type": "heading", "settings": { "text": "Made with intention" } },
+        "tx": { "type": "text", "settings": { "text": "<p>We believe in considered design — fewer, better pieces produced in small runs with care.</p>" } },
+        "fl": { "type": "feature_list", "settings": { "items": "Ethically produced in Europe\nOrganic & recycled fabrics\nCarbon-neutral shipping" } },
+        "bt": { "type": "button", "settings": { "label": "Our story", "url": "/pages/about", "style": "primary" } }
+      },
+      "block_order": ["eb", "hd", "tx", "fl", "bt"]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "eyebrow": "Stay in the loop",
+        "heading": "Be the first to know",
+        "text": "<p>Early access, exclusive drops, and 10% off your first order.</p>",
+        "alignment": "center",
+        "color_scheme": "scheme-3",
+        "overlay_opacity": 40,
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
     }
   },
   "order": [
-    "main"
+    "hero",
+    "usp",
+    "showcase",
+    "featured",
+    "lookbook",
+    "iwt",
+    "newsletter"
   ]
 }

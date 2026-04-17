@@ -1,0 +1,144 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Zum Inhalt springen",
+      "menu": "Menü",
+      "open_menu": "Menü öffnen",
+      "close_menu": "Menü schließen",
+      "open_search": "Suche öffnen",
+      "close_search": "Suche schließen",
+      "submit_search": "Suchen",
+      "account": "Konto",
+      "cart": "Warenkorb",
+      "main_navigation": "Hauptnavigation",
+      "drawer_navigation": "Kategorienavigation"
+    },
+    "menu": {
+      "title": "Menü",
+      "view_all": "Alle anzeigen"
+    },
+    "search": {
+      "title": "Suche",
+      "placeholder": "Produkte, Kategorien, Beiträge…"
+    },
+    "slideshow": {
+      "next": "Nächste Folie",
+      "previous": "Vorherige Folie",
+      "go_to": "Zu Folie {{ number }}",
+      "dots": "Folien-Indikatoren"
+    },
+    "footer": {
+      "payment_methods": "Zahlungsmethoden",
+      "policies": "Rechtliches",
+      "copyright_suffix": "Alle Rechte vorbehalten."
+    }
+  },
+  "cart": {
+    "title": "Dein Warenkorb",
+    "empty": "Dein Warenkorb ist leer.",
+    "continue_shopping": "Weiter einkaufen",
+    "checkout": "Zur Kasse",
+    "update": "Warenkorb aktualisieren",
+    "remove": "Entfernen",
+    "quantity": "Menge",
+    "decrease": "Menge für {{ product }} verringern",
+    "increase": "Menge für {{ product }} erhöhen",
+    "subtotal": "Zwischensumme",
+    "summary": "Bestellübersicht",
+    "taxes_and_shipping": "Steuern und Versand werden im Checkout berechnet.",
+    "note": "Bestellnotiz hinzufügen",
+    "note_placeholder": "Wie können wir helfen?",
+    "items_count": {
+      "one": "{{ count }} Artikel",
+      "other": "{{ count }} Artikel"
+    },
+    "headings": {
+      "product": "Produkt",
+      "quantity": "Menge",
+      "total": "Summe"
+    }
+  },
+  "newsletter": {
+    "label_email": "E-Mail",
+    "email_label": "E-Mail",
+    "placeholder_email": "Deine E-Mail-Adresse",
+    "email_placeholder": "Deine E-Mail-Adresse",
+    "submit": "Abonnieren",
+    "success": "Danke für dein Abo! Schau in dein Postfach."
+  },
+  "products": {
+    "placeholder_title": "Beispiel-Produkt",
+    "media": {
+      "view_3d": "In 3D ansehen",
+      "view_in_3d": "In 3D ansehen"
+    },
+    "product": {
+      "add_to_cart": "In den Warenkorb",
+      "sold_out": "Ausverkauft",
+      "on_sale": "Sale",
+      "regular_price": "Normaler Preis",
+      "sale_price": "Angebotspreis",
+      "quantity": "Menge",
+      "decrease_quantity": "Menge verringern",
+      "increase_quantity": "Menge erhöhen"
+    }
+  },
+  "sections": {
+    "hero": {
+      "empty_heading": "Erzähle deine Markengeschichte",
+      "empty_text": "Nutze diesen Platz für eine Headline, begrüße deine Kundschaft oder zeige eine neue Kollektion.",
+      "video_title": "Hero-Video"
+    },
+    "featured_collection": {
+      "view_all": "Alle Produkte anzeigen"
+    },
+    "lookbook": {
+      "shop_product": "Shoppen"
+    },
+    "product_showcase": {
+      "empty_hint": "Wähle im Theme-Editor ein Produkt aus, um es hier anzuzeigen."
+    },
+    "usp_bar": {
+      "aria_label": "Vorteile des Shops"
+    }
+  },
+  "search": {
+    "title": "Suche",
+    "placeholder": "Produkte, Kollektionen, Artikel suchen…",
+    "submit": "Suchen",
+    "no_results_html": "Keine Ergebnisse für \"{{ terms }}\".",
+    "results_for_html": "{{ count }} Ergebnisse für \"{{ terms }}\"."
+  },
+  "password": {
+    "title": "Demnächst verfügbar",
+    "password": "Passwort",
+    "enter": "Bestätigen"
+  },
+  "gift_card": {
+    "expired": "Abgelaufen",
+    "expires_on": "Läuft ab am {{ expires_on }}",
+    "card": "Geschenkkarte",
+    "use_at_checkout": "Nutze diesen Code beim Checkout.",
+    "add_to_apple_wallet": "Zu Apple Wallet hinzufügen"
+  },
+  "404": {
+    "title": "Seite nicht gefunden",
+    "not_found": "Die gesuchte Seite existiert nicht.",
+    "back_to_shopping": "Zurück zum Shop"
+  },
+  "blog": {
+    "article_comments": {
+      "one": "{{ count }} Kommentar",
+      "other": "{{ count }} Kommentare"
+    },
+    "article_metadata_html": "<span>{{ date }}</span> &middot; <span>{{ author }}</span>",
+    "comment_form_title": "Kommentar schreiben",
+    "comment_form_name": "Name",
+    "comment_form_email": "E-Mail",
+    "comment_form_body": "Nachricht",
+    "comment_form_submit": "Kommentar absenden"
+  },
+  "collections": {
+    "title": "Kollektionen"
+  }
+}
