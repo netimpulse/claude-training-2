@@ -4,6 +4,37 @@
   "sections": {
     "footer": {
       "type": "footer",
+      "blocks": {
+        "brand": {
+          "type": "logo_info",
+          "settings": {
+            "logo_height": 40,
+            "description": "<p>A short description of your brand - tell customers what makes you different.</p>"
+          }
+        },
+        "shop_menu": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "footer"
+          }
+        },
+        "help_menu": {
+          "type": "menu",
+          "settings": {
+            "heading": "Help",
+            "menu": "footer"
+          }
+        },
+        "newsletter": {
+          "type": "newsletter",
+          "settings": {
+            "heading": "Newsletter",
+            "description": "<p>Sign up for exclusive drops and offers.</p>"
+          }
+        }
+      },
+      "block_order": ["brand", "shop_menu", "help_menu", "newsletter"],
       "settings": {
         "color_scheme": "scheme-3",
         "show_policies": true,
