@@ -1,47 +1,422 @@
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+{{ 'section-pro-header.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'pro-header.js' | asset_url }}" defer="defer"></script>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
+{%- liquid
+  if section.settings.sticky_header_type != 'none'
+    assign wrap = 'sticky-header'
+  else
+    assign wrap = 'div'
+  endif
+  assign secondary_menu = linklists[section.settings.menu_2_handle]
+  assign show_drawer_2 = false
+  if section.settings.enable_secondary_drawer and secondary_menu != blank
+    assign show_drawer_2 = true
+  endif
+-%}
 
-<h1>{{ collection.title }}</h1>
+{%- style -%}
+  {{ section.settings.logo_font | font_face: font_display: 'swap' }}
+  #shopify-section-{{ section.id }} {
+    --ph-bg: {{ section.settings.background_color }};
+    --ph-text: {{ section.settings.text_color }};
+    --ph-hover: {{ section.settings.hover_color }};
+    --ph-active: {{ section.settings.active_color }};
+    --ph-cta-bg: {{ section.settings.cta_bg }};
+    --ph-cta-text: {{ section.settings.cta_text_color }};
+    --ph-cta-radius: {{ section.settings.cta_radius }}px;
+    --ph-height: {{ section.settings.header_height }}px;
+    --ph-logo-w: {{ section.settings.logo_width }}px;
+    --ph-border: {{ section.settings.border_color }};
+    --ph-drawer-bg: {{ section.settings.drawer_background }};
+    --ph-drawer-text: {{ section.settings.drawer_text_color }};
+  }
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+  #shopify-section-{{ section.id }} .ph__menu-link,
+  #shopify-section-{{ section.id }} .ph__drawer-link,
+  #shopify-section-{{ section.id }} .ph__cta {
+    {%- if section.settings.menu_font != blank -%}
+      font-family: {{ section.settings.menu_font.family }}, {{ section.settings.menu_font.fallback_families }};
+      font-weight: {{ section.settings.menu_font.weight }};
+      font-style: {{ section.settings.menu_font.style }};
+    {%- endif -%}
+  }
+
+  #shopify-section-{{ section.id }} .ph__logo-text {
+    font-family: {{ section.settings.logo_font.family }}, {{ section.settings.logo_font.fallback_families }};
+    font-weight: {{ section.settings.logo_font.weight }};
+    font-style: {{ section.settings.logo_font.style }};
+  }
+{%- endstyle -%}
+
+<{{ wrap }}
+  {%- if wrap == 'sticky-header' %} data-sticky-type="{{ section.settings.sticky_header_type }}"{% endif -%}
+  class="pro-header-wrapper section-header"
+  data-pro-header
+>
+  <header class="pro-header" role="banner">
+    <div class="pro-header__inner page-width">
+
+      {%- comment -%} LEFT: optional secondary drawer trigger + logo {%- endcomment -%}
+      <div class="pro-header__left">
+        {%- if show_drawer_2 -%}
+          <button
+            type="button"
+            class="ph__icon-btn ph__icon-btn--drawer-2"
+            data-drawer-toggle="secondary"
+            aria-label="{{ section.settings.drawer_2_label | default: 'Kategorien' | escape }}"
+            aria-expanded="false"
+            aria-controls="ProHeaderDrawer2-{{ section.id }}"
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+              <path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            {%- if section.settings.show_drawer_2_label and section.settings.drawer_2_label != blank -%}
+              <span class="ph__icon-label">{{ section.settings.drawer_2_label | escape }}</span>
+            {%- endif -%}
+          </button>
+        {%- endif -%}
+
+        <a href="{{ routes.root_url }}" class="pro-header__logo" aria-label="{{ shop.name | escape }}">
+          {%- if section.settings.logo_type == 'image' and section.settings.logo != blank -%}
+            {%- assign logo_alt = section.settings.logo.alt | default: shop.name | escape -%}
+            {{ section.settings.logo | image_url: width: 600 | image_tag:
+              class: 'pro-header__logo-img',
+              widths: '120, 240, 360, 480, 600',
+              alt: logo_alt,
+              loading: 'eager',
+              fetchpriority: 'high' }}
+          {%- else -%}
+            <span class="ph__logo-text">{{ section.settings.logo_text | default: shop.name | escape }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- comment -%} CENTER: main navigation with dropdown sub-menus {%- endcomment -%}
+      {%- render 'pro-header-menu', menu: section.settings.menu, section_id: section.id -%}
+
+      {%- comment -%} RIGHT: CTA + icons + main burger {%- endcomment -%}
+      <div class="pro-header__right">
+        {%- if section.settings.enable_cta and section.settings.cta_label != blank -%}
+          <a href="{{ section.settings.cta_link | default: '#' }}" class="ph__cta">
+            {{ section.settings.cta_label | escape }}
+          </a>
+        {%- endif -%}
+
+        <div class="pro-header__icons">
+          {%- if section.settings.enable_search -%}
+            <a href="{{ routes.search_url }}" class="ph__icon-btn" aria-label="{{ 'general.search.search' | t | default: 'Suche' }}">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M20 20l-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </a>
+          {%- endif -%}
+
+          {%- if section.settings.enable_account and shop.customer_accounts_enabled -%}
+            <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="ph__icon-btn" aria-label="{{ 'customer.login_page.title' | t | default: 'Konto' }}">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M4 21c0-4.5 3.5-8 8-8s8 3.5 8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </a>
+          {%- endif -%}
+
+          {%- if section.settings.enable_cart -%}
+            <a href="{{ routes.cart_url }}" class="ph__icon-btn ph__icon-btn--cart" aria-label="{{ 'sections.header.cart' | t | default: 'Warenkorb' }}">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                <path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7z M9 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {%- if cart.item_count > 0 -%}
+                <span class="ph__cart-count" aria-hidden="true">{{ cart.item_count }}</span>
+                <span class="visually-hidden">{{ cart.item_count }} {{ 'sections.header.cart_count' | t | default: 'Artikel im Warenkorb' }}</span>
+              {%- endif -%}
+            </a>
+          {%- endif -%}
+
+          <button
+            type="button"
+            class="ph__icon-btn ph__icon-btn--burger"
+            data-drawer-toggle="primary"
+            aria-label="{{ 'sections.header.menu' | t | default: 'Menü' }}"
+            aria-expanded="false"
+            aria-controls="ProHeaderDrawer-{{ section.id }}"
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+              <path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
       </div>
-    {% endfor %}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+    </div>
+  </header>
 
-{% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  }
-{% endstylesheet %}
+  {%- render 'pro-header-drawer',
+    section_id: section.id,
+    menu: section.settings.menu,
+    secondary_menu: secondary_menu,
+    show_drawer_2: show_drawer_2,
+    cta_label: section.settings.cta_label,
+    cta_link: section.settings.cta_link,
+    enable_cta: section.settings.enable_cta
+  -%}
+</{{ wrap }}>
 
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "Pro Header",
+  "tag": "section",
+  "class": "section section--pro-header",
+  "enabled_on": {
+    "groups": [
+      "header"
+    ]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "select",
+      "id": "logo_type",
+      "label": "Logo-Typ",
+      "default": "image",
+      "options": [
+        {
+          "value": "image",
+          "label": "Bild"
+        },
+        {
+          "value": "text",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo-Bild"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo-Text",
+      "default": "netimpulse"
+    },
+    {
+      "type": "font_picker",
+      "id": "logo_font",
+      "label": "Logo-Schriftart",
+      "default": "plus_jakarta_sans_n7"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 60,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo-Breite",
+      "default": 120
+    },
+    {
+      "type": "header",
+      "content": "Hauptmenü"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Hauptmenü",
+      "default": "main-menu",
+      "info": "Untermenü-Links erscheinen automatisch als Dropdown auf Desktop."
+    },
+    {
+      "type": "font_picker",
+      "id": "menu_font",
+      "label": "Menü-Schriftart",
+      "default": "plus_jakarta_sans_n4"
+    },
+    {
+      "type": "header",
+      "content": "Sekundäres Menü (Burger links)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_secondary_drawer",
+      "label": "Sekundäres Menü aktivieren",
+      "default": false,
+      "info": "Aktiviert links neben dem Logo einen Burger-Button mit Side-Drawer."
+    },
+    {
+      "type": "text",
+      "id": "menu_2_handle",
+      "label": "Sekundäres Menü (Handle)",
+      "default": "theme-kategorien",
+      "info": "Handle des Menüs aus Shopify Navigation. Shopify erlaubt nur EIN link_list-Setting pro Section, daher hier per Handle."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_drawer_2_label",
+      "label": "Label neben Burger anzeigen",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "drawer_2_label",
+      "label": "Burger-Label",
+      "default": "Kategorien"
+    },
+    {
+      "type": "header",
+      "content": "Call-to-Action"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_cta",
+      "label": "CTA-Button anzeigen",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button-Text",
+      "default": "Jetzt anfragen"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button-Link"
+    },
+    {
+      "type": "range",
+      "id": "cta_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Button-Radius",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Icons rechts"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_search",
+      "label": "Suche-Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_account",
+      "label": "Konto-Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_cart",
+      "label": "Warenkorb-Icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "header_height",
+      "min": 60,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "label": "Header-Höhe",
+      "default": 88
+    },
+    {
+      "type": "select",
+      "id": "sticky_header_type",
+      "label": "Sticky-Verhalten",
+      "default": "on-scroll-up",
+      "options": [
+        {
+          "value": "none",
+          "label": "Nicht sticky"
+        },
+        {
+          "value": "always",
+          "label": "Immer sticky"
+        },
+        {
+          "value": "on-scroll-up",
+          "label": "Beim Scrollen nach oben"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Hintergrund",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text & Icons",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "hover_color",
+      "label": "Hover-Farbe",
+      "default": "#4a6965"
+    },
+    {
+      "type": "color",
+      "id": "active_color",
+      "label": "Aktiver Link",
+      "default": "#184d47"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Trennlinie",
+      "default": "#E5EBEA"
+    },
+    {
+      "type": "color",
+      "id": "cta_bg",
+      "label": "CTA-Hintergrund",
+      "default": "#184d47"
+    },
+    {
+      "type": "color",
+      "id": "cta_text_color",
+      "label": "CTA-Text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "drawer_background",
+      "label": "Drawer-Hintergrund",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "drawer_text_color",
+      "label": "Drawer-Text",
+      "default": "#1e293b"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ]
 }
 {% endschema %}
